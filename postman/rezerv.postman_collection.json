@@ -1,0 +1,77 @@
+{
+  "info": {
+    "name": "REZERV",
+    "description": "Всички заявки минават през rezerv-gateway (http://localhost:8080). Използвай environment 'REZERV local'. Сложи валиден access token в променливата {{accessToken}} (след като rezerv-cas е готов — от /api/auth/login).",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [],
+  "item": [
+    {
+      "name": "gateway",
+      "description": "Заявки, демонстриращи поведението на самия gateway: JWT валидация, context headers, rate limit, единен error формат.",
+      "item": [
+        {
+          "name": "health (actuator)",
+          "request": {
+            "method": "GET",
+            "url": "{{gatewayUrl}}/actuator/health",
+            "description": "Проверка дали gateway-ят е жив. Не минава през routing/auth."
+          },
+          "response": [
+            {
+              "name": "200 OK",
+              "originalRequest": { "method": "GET", "url": "{{gatewayUrl}}/actuator/health" },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "body": "{\n  \"status\": \"UP\"\n}"
+            }
+          ]
+        },
+        {
+          "name": "protected path БЕЗ token → 401",
+          "request": {
+            "method": "GET",
+            "url": "{{gatewayUrl}}/api/bookings/my",
+            "description": "Всеки не-публичен path без Authorization header се отхвърля от gateway-я с единния error формат (REZERV.md §2.6)."
+          },
+          "response": [
+            {
+              "name": "401 Unauthorized",
+              "originalRequest": { "method": "GET", "url": "{{gatewayUrl}}/api/bookings/my" },
+              "status": "Unauthorized",
+              "code": 401,
+              "_postman_previewlanguage": "json",
+              "body": "{\n  \"status\": 401,\n  \"code\": \"UNAUTHORIZED\",\n  \"message\": \"Missing Authorization header\",\n  \"correlationId\": \"f7634072-3ba7-42c3-a4ed-602978a31f87\",\n  \"timestamp\": \"2026-07-14T07:32:25.929Z\"\n}"
+            }
+          ]
+        },
+        {
+          "name": "protected path С token → forward",
+          "request": {
+            "method": "GET",
+            "url": "{{gatewayUrl}}/api/bookings/my",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{accessToken}}" }
+            ],
+            "description": "С валиден access token gateway-ят закача X-User-Id / X-User-Roles / X-Company-Id / X-Correlation-Id и forward-ва към rezerv-booking (маха /api префикса). Докато rezerv-booking не е вдигнат, ще върне 500."
+          },
+          "response": [
+            {
+              "name": "401 Invalid token",
+              "originalRequest": {
+                "method": "GET",
+                "url": "{{gatewayUrl}}/api/bookings/my",
+                "header": [ { "key": "Authorization", "value": "Bearer невалиден-или-изтекъл" } ]
+              },
+              "status": "Unauthorized",
+              "code": 401,
+              "_postman_previewlanguage": "json",
+              "body": "{\n  \"status\": 401,\n  \"code\": \"UNAUTHORIZED\",\n  \"message\": \"Invalid or expired token\",\n  \"correlationId\": \"...\",\n  \"timestamp\": \"...\"\n}"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
