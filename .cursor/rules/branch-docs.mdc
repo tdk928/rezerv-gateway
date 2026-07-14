@@ -6,6 +6,8 @@ alwaysApply: true
 # Git workflow
 
 - Branches: `feature/* → development → test → main`. Работи се винаги във feature branch от `development`.
+- **НИКОГА не мърджвай в `development` (или друг branch) без изрично нареждане от собственика.**
+  Push-ваш само feature branch-а; merge-ът е негово решение.
 
 # Край на всеки branch (задължително, преди merge/PR)
 
