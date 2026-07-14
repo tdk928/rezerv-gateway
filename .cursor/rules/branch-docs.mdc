@@ -1,0 +1,25 @@
+---
+description: Git workflow, задължителни unit тестове и branch документация
+alwaysApply: true
+---
+
+# Git workflow
+
+- Branches: `feature/* → development → test → main`. Работи се винаги във feature branch от `development`.
+
+# Край на всеки branch (задължително, преди merge/PR)
+
+1. **Unit тестове** за новите неща, направени в branch-а (JUnit 5 + Mockito;
+   за gateway — `WebTestClient`). `mvn test` трябва да минава.
+2. **Обнови `docs/PROJECT_LOG.md`** — единственият файл-хроника на репото.
+   Всеки запис има пореден номер (1, 2, 3, …), име на branch-а и обобщение
+   какво е направено (нови endpoints, конфигурации, решения). Най-новите отгоре.
+   Форматът е такъв, че: (а) при нов branch агентът чете този файл и знае
+   всичко направено досега; (б) frontend-ът може да се реферира към него,
+   за да знае какво има на backend-а без дълги обяснения.
+3. **Обнови Postman колекцията** (виж endpoints-and-scope правилото), ако има нови/променени endpoints.
+
+# Начало на всеки branch
+
+- Прочети `docs/PROJECT_LOG.md` и `/Users/teodorkalev/Desktop/rezerv/REZERV.md`,
+  за да знаеш контекста досега.

@@ -1,0 +1,21 @@
+---
+description: Java/Spring конвенции за rezerv-gateway (виж и ../REZERV.md — single source of truth)
+alwaysApply: true
+---
+
+# Java конвенции (rezerv-gateway)
+
+- **Java 21+**, Spring Boot (последна стабилна версия), Maven, Spring Cloud Gateway (WebFlux).
+- **Само последните новости от езика/технологията** — никакви legacy неща:
+  records, sealed interfaces, pattern matching, switch expressions, text blocks, `var`.
+  Не използвай остарели API-та (напр. `new Date()`, `RestTemplate`, XML config, field injection).
+- **Records навсякъде**: DTO-та, команди, config properties (`@ConfigurationProperties` върху record).
+  Lombok САМО ако record не върши работа (напр. mutable JPA entity — тук в gateway няма такива).
+  Никога `@Data`.
+- Constructor injection (без `@Autowired` на полета).
+- Константи за header имена (`X-User-Id` и т.н.) — без magic strings.
+- SLF4J с параметризирани логове: `log.info("user {}", id)`, не конкатенация.
+- Слоеве: `config` / `filter` / `security` / `web`. Controller-и връщат само records.
+- Единен формат на грешките (REZERV.md §2.6):
+  `{ "status", "code", "message", "correlationId", "timestamp" }`.
+- `mvn -q compile` преди всеки commit; `mvn test` преди край на branch.

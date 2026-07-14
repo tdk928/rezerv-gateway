@@ -1,0 +1,19 @@
+{
+  "java.configuration.updateBuildConfiguration": "automatic",
+  "java.compile.nullAnalysis.mode": "automatic",
+  "editor.formatOnSave": true,
+  "files.trimTrailingWhitespace": true,
+  "files.insertFinalNewline": true,
+  "files.exclude": {
+    "**/.DS_Store": true,
+    "**/target": true
+  },
+  "java.saveActions.organizeImports": true,
+  "[java]": {
+    "editor.tabSize": 4,
+    "editor.insertSpaces": true
+  },
+  "[json][jsonc][yaml]": {
+    "editor.tabSize": 2
+  }
+}
