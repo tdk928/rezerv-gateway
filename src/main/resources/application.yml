@@ -1,0 +1,51 @@
+server:
+  port: 8080
+
+spring:
+  application:
+    name: rezerv-gateway
+  data:
+    redis:
+      host: ${REDIS_HOST:localhost}
+      port: ${REDIS_PORT:6380}
+  cloud:
+    gateway:
+      server:
+        webflux:
+          default-filters:
+            - StripPrefix=1
+            - name: RequestRateLimiter
+              args:
+                redis-rate-limiter.replenishRate: ${RATE_LIMIT_REPLENISH:20}
+                redis-rate-limiter.burstCapacity: ${RATE_LIMIT_BURST:40}
+                key-resolver: "#{@ipKeyResolver}"
+          routes:
+            - id: rezerv-cas
+              uri: ${CAS_URI:http://localhost:8081}
+              predicates:
+                - Path=/api/auth/**
+            - id: rezerv-business
+              uri: ${BUSINESS_URI:http://localhost:8082}
+              predicates:
+                - Path=/api/business/**
+            - id: rezerv-booking
+              uri: ${BOOKING_URI:http://localhost:8083}
+              predicates:
+                - Path=/api/bookings/**
+
+rezerv:
+  jwt:
+    secret: ${JWT_SECRET:dev-secret-change-me-0123456789abcdef0123456789abcdef}
+  auth:
+    public-paths:
+      - /api/auth/register
+      - /api/auth/login
+      - /api/auth/refresh
+      - /api/business/public/**
+      - /api/bookings/public/**
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,gateway
