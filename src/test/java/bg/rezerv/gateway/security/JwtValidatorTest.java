@@ -55,6 +55,18 @@ class JwtValidatorTest {
     }
 
     @Test
+    void numericCompanyIdClaimIsCoercedToString() throws Exception {
+        var token = signedToken(SECRET, builder -> builder
+                .subject("42")
+                .claim("companyId", 5L)
+                .expirationTime(Date.from(Instant.now().plusSeconds(900))));
+
+        JwtClaims claims = validator.validate(token);
+
+        assertThat(claims.companyId()).isEqualTo("5");
+    }
+
+    @Test
     void expiredTokenIsRejected() throws Exception {
         var token = signedToken(SECRET, builder -> builder
                 .subject("42")

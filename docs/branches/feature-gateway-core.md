@@ -16,6 +16,8 @@
   - `StripPrefix=1` глобално (маха `/api`); URI-тата са override-ваеми през env (`CAS_URI` и т.н.).
 - **JWT валидация** (`JwtValidator`): HS256 със shared secret (`JWT_SECRET`, dev default от
   REZERV.md §2.2); проверява подпис, expiry, задължителен `sub`; чете `email`, `roles`, `companyId`.
+  `companyId` се coerce-ва към string (CAS го издава като string; числови claims от стари
+  token-и също минават — иначе Nimbus `getStringClaim` → 401).
 - **`AuthenticationGlobalFilter`** (order -100):
   1. осигурява `X-Correlation-Id` (генерира UUID, ако липсва);
   2. маха client-supplied `X-User-Id`/`X-User-Roles`/`X-Company-Id` (anti-spoofing);

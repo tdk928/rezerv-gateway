@@ -60,11 +60,20 @@ public class JwtValidator {
                     userId,
                     claims.getStringClaim("email"),
                     roles == null ? List.of() : roles,
-                    claims.getStringClaim("companyId"));
+                    readCompanyId(claims));
         } catch (InvalidTokenException e) {
             throw e;
         } catch (Exception e) {
             throw new InvalidTokenException("Token validation failed", e);
         }
+    }
+
+    /**
+     * CAS трябва да издава companyId като string; стари/грешни token-и може да имат число —
+     * Nimbus getStringClaim хвърля за Integer/Long и gateway връщаше 401.
+     */
+    private static String readCompanyId(com.nimbusds.jwt.JWTClaimsSet claims) {
+        Object value = claims.getClaim("companyId");
+        return value == null ? null : String.valueOf(value);
     }
 }
